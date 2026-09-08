@@ -7,6 +7,26 @@
   --info-color: #17a2b8;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header button {
+  cursor: pointer;
+  font-size: 1.2rem;
+  background: none;
+  border: none;
+}
+
+.settings {
+  background: #eef6ff;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
 .board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -22,16 +42,32 @@
 }
 
 .card {
+  position: relative;
   background: white;
   border-radius: 6px;
   padding: 0.75rem;
   margin-bottom: 0.5rem;
   box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  cursor: grab;
+}
+
+.card:active {
+  cursor: grabbing;
 }
 
 .card .project {
   font-size: 0.85rem;
   color: #666;
+}
+
+.remove-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
 }
 
 .add-form {
