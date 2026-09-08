@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 
 const tasks = ref([
   { id: 1, title: 'Exempeluppgift', project: 'Sidoprojekt A', status: 'todo', priority: 'medium' },
@@ -16,6 +16,28 @@ const newTask = ref({
 
 const showSettings = ref(false)
 const draggedTaskId = ref(null)
+const isDark = ref(false)
+
+onMounted(() => {
+  const savedTasks = localStorage.getItem('tasks')
+  if (savedTasks) {
+    tasks.value = JSON.parse(savedTasks)
+    nextId = tasks.value.length ? Math.max(...tasks.value.map(t => t.id)) + 1 : 1
+  }
+
+  const savedTheme = localStorage.getItem('theme')
+  isDark.value = savedTheme === 'dark'
+  document.documentElement.setAttribute('data-theme', isDark.value ? 'dark' : 'light')
+})
+
+watch(tasks, (newTasks) => {
+  localStorage.setItem('tasks', JSON.stringify(newTasks))
+}, { deep: true })
+
+watch(isDark, (value) => {
+  localStorage.setItem('theme', value ? 'dark' : 'light')
+  document.documentElement.setAttribute('data-theme', value ? 'dark' : 'light')
+})
 
 function addTask() {
   if (!newTask.value.title.trim()) return
@@ -47,6 +69,12 @@ function onDrop(newStatus) {
   draggedTaskId.value = null
 }
 
+function priorityColor(priority) {
+  if (priority === 'high') return 'var(--danger-color)'
+  if (priority === 'medium') return 'var(--warning-color)'
+  return 'var(--success-color)'
+}
+
 const todoTasks = computed(() => tasks.value.filter(t => t.status === 'todo'))
 const inProgressTasks = computed(() => tasks.value.filter(t => t.status === 'in-progress'))
 const doneTasks = computed(() => tasks.value.filter(t => t.status === 'done'))
@@ -56,7 +84,10 @@ const doneTasks = computed(() => tasks.value.filter(t => t.status === 'done'))
   <div class="app">
     <div class="header">
       <h1>Projects Todo</h1>
-      <button @click="showSettings = !showSettings">⚙️</button>
+      <div class="header-actions">
+        <button @click="isDark = !isDark" class="icon-btn">{{ isDark ? '☀️' : '🌙' }}</button>
+        <button @click="showSettings = !showSettings" class="icon-btn">⚙️</button>
+      </div>
     </div>
 
     <div v-if="showSettings" class="settings">
@@ -97,6 +128,7 @@ const doneTasks = computed(() => tasks.value.filter(t => t.status === 'done'))
           class="card"
           draggable="true"
           @dragstart="onDragStart(task.id)"
+          :style="{ borderLeft: '4px solid ' + priorityColor(task.priority) }"
         >
           <p class="title">{{ task.title }}</p>
           <p class="project">{{ task.project }}</p>
@@ -115,6 +147,7 @@ const doneTasks = computed(() => tasks.value.filter(t => t.status === 'done'))
           class="card"
           draggable="true"
           @dragstart="onDragStart(task.id)"
+          :style="{ borderLeft: '4px solid ' + priorityColor(task.priority) }"
         >
           <p class="title">{{ task.title }}</p>
           <p class="project">{{ task.project }}</p>
@@ -133,6 +166,7 @@ const doneTasks = computed(() => tasks.value.filter(t => t.status === 'done'))
           class="card"
           draggable="true"
           @dragstart="onDragStart(task.id)"
+          :style="{ borderLeft: '4px solid ' + priorityColor(task.priority) }"
         >
           <p class="title">{{ task.title }}</p>
           <p class="project">{{ task.project }}</p>
