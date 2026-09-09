@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue'
 
 const tasks = ref([
   { id: 1, title: 'Exempeluppgift', project: 'Sidoprojekt A', status: 'todo', priority: 'medium' },
@@ -48,7 +48,7 @@ watch(userName, (value) => {
 const selectedProject = ref('all')
 
 const uniqueProjects = computed(() => {
-  const projects = tasks.value.map(t => t.project).filter(p => p.trim() !== '')
+  const projects = tasks.value.map(t => t.project).filter(p => p && p.trim() !== '')
   return [...new Set(projects)]
 })
 
@@ -58,9 +58,10 @@ const filteredTasks = computed(() => {
   }
   return tasks.value.filter(t => t.project === selectedProject.value)
 })
-const filteredTodoTasks = computed(() => filteredTasks.value.filter(t => t.status === 'todo'))
-const filteredInProgressTasks = computed(() => filteredTasks.value.filter(t => t.status === 'in-progress'))
-const filteredDoneTasks = computed(() => filteredTasks.value.filter(t => t.status === 'done'))
+
+const todoTasks = computed(() => filteredTasks.value.filter(t => t.status === 'todo'))
+const inProgressTasks = computed(() => filteredTasks.value.filter(t => t.status === 'in-progress'))
+const doneTasks = computed(() => filteredTasks.value.filter(t => t.status === 'done'))
 
 function addTask() {
   if (!newTask.value.title.trim()) return
@@ -97,10 +98,6 @@ function priorityColor(priority) {
   if (priority === 'medium') return 'var(--warning-color)'
   return 'var(--success-color)'
 }
-
-const todoTasks = computed(() => tasks.value.filter(t => t.status === 'todo'))
-const inProgressTasks = computed(() => tasks.value.filter(t => t.status === 'in-progress'))
-const doneTasks = computed(() => tasks.value.filter(t => t.status === 'done'))
 </script>
 
 <template>
