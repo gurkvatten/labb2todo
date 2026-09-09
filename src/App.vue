@@ -4,9 +4,10 @@ import { ref, computed, watch, onMounted } from 'vue';
 const tasks = ref([
   { id: 1, title: 'Exempeluppgift', project: 'Sidoprojekt A', status: 'todo', priority: 'medium' },
   { id: 2, title: 'Fixa layout', project: 'Sidoprojekt B', status: 'in-progress', priority: 'high' },
+  { id: 3, title: 'Skriv dokumentation', project: 'Sidoprojekt C', status: 'done', priority: 'low' },
 ])
 
-let nextId = 3
+let nextId = 4
 
 const newTask = ref({
   title: '',
@@ -17,6 +18,7 @@ const newTask = ref({
 const showSettings = ref(false)
 const draggedTaskId = ref(null)
 const isDark = ref(false)
+const userName = ref(localStorage.getItem('userName') || 'Johan')
 
 onMounted(() => {
   const savedTasks = localStorage.getItem('tasks')
@@ -37,6 +39,10 @@ watch(tasks, (newTasks) => {
 watch(isDark, (value) => {
   localStorage.setItem('theme', value ? 'dark' : 'light')
   document.documentElement.setAttribute('data-theme', value ? 'dark' : 'light')
+})
+
+watch(userName, (value) => {
+  localStorage.setItem('userName', value)
 })
 
 function addTask() {
@@ -83,7 +89,10 @@ const doneTasks = computed(() => tasks.value.filter(t => t.status === 'done'))
 <template>
   <div class="app">
     <div class="header">
-      <h1>Projects Todo</h1>
+      <div>
+        <h1>{{ userName }}s Kanban board</h1>
+        <input v-model="userName" placeholder="Namn" class="name-input" />
+      </div>
       <div class="header-actions">
         <button @click="isDark = !isDark" class="icon-btn">{{ isDark ? '☀️' : '🌙' }}</button>
         <button @click="showSettings = !showSettings" class="icon-btn">⚙️</button>
@@ -105,7 +114,7 @@ const doneTasks = computed(() => tasks.value.filter(t => t.status === 'done'))
       <input
         v-model="newTask.project"
         type="text"
-        placeholder="Projekt"
+        placeholder="Vilket projekt?"
       />
       <select v-model="newTask.priority">
         <option value="low">Låg</option>

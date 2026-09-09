@@ -1,35 +1,59 @@
 :root {
-  --primary-color: #4f7cff;
-  --secondary-color: #6c757d;
-  --success-color: #2ecc71;
-  --danger-color: #ef4444;
-  --warning-color: #f5a623;
-  --info-color: #17a2b8;
+  --primary-color: #2c6ea7;
+  --secondary-color: #718096;
+  --success-color: #477a5a;
+  --danger-color: #a65353;
+  --warning-color: #a77a3d;
+  --info-color: #3d718f;
 
-  --bg: #f7f8fa;
-  --surface: #ffffff;
-  --column-bg: #eef0f3;
-  --text: #1a1a1a;
-  --text-secondary: #6b7280;
-  --border: #e2e4e8;
-  --shadow: rgba(0, 0, 0, 0.08);
+  --bg: #d8e0e5;
+  --surface: #f3f5f4;
+  --column-bg: #cbd5dc;
+  --text: #26343f;
+  --text-secondary: #647481;
+  --border: #aebcc5;
+  --shadow: rgba(38, 52, 63, 0.16);
+
+  --blueprint-line: rgba(11, 77, 135, 0.09);
+  --blueprint-accent: #185992;
 }
 
 [data-theme="dark"] {
-  --bg: #14161a;
-  --surface: #1e2126;
-  --column-bg: #22262c;
-  --text: #f2f2f2;
-  --text-secondary: #9aa0a8;
-  --border: #2d3138;
-  --shadow: rgba(0, 0, 0, 0.4);
+  --primary-color: #82a9c4;
+  --secondary-color: #8799a7;
+  --success-color: #78a684;
+  --danger-color: #c47777;
+  --warning-color: #c09a5e;
+  --info-color: #79a8bf;
+
+  --bg: #202b34;
+  --surface: #2c3943;
+  --column-bg: #26333d;
+  --text: #e2e8eb;
+  --text-secondary: #9eabb4;
+  --border: #43525e;
+  --shadow: rgba(0, 0, 0, 0.35);
+
+  --blueprint-line: rgba(130, 169, 196, 0.07);
+  --blueprint-accent: #82a9c4;
 }
 
 body {
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--blueprint-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--blueprint-line) 1px, transparent 1px);
+  background-size: 24px 24px;
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  transition: background 0.2s ease, color 0.2s ease;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+  min-height: 100vh;
 }
 
 .header {
@@ -47,18 +71,27 @@ body {
   cursor: pointer;
   font-size: 1.1rem;
   background: var(--surface);
+  color: var(--primary-color);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 0.4rem 0.6rem;
+  box-shadow: 0 1px 2px var(--shadow);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.icon-btn:hover {
+  background: var(--bg);
+  box-shadow: 0 2px 5px var(--shadow);
 }
 
 .settings {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 1rem;
   margin-top: 1rem;
   color: var(--text-secondary);
+  box-shadow: 0 1px 3px var(--shadow);
 }
 
 .board {
@@ -69,28 +102,66 @@ body {
 }
 
 .column {
+  position: relative;
   background: var(--column-bg);
-  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
   padding: 1rem;
   min-height: 300px;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+.column::before,
+.column::after {
+  content: '';
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-color: var(--blueprint-accent);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.column::before {
+  top: 7px;
+  left: 7px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.column::after {
+  right: 7px;
+  bottom: 7px;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
 }
 
 .column h2 {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
+  color: var(--primary-color);
+  font-size: 0.85rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.8rem;
 }
 
 .card {
   position: relative;
   background: var(--surface);
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
   padding: 0.75rem;
   margin-bottom: 0.5rem;
   box-shadow: 0 1px 3px var(--shadow);
   cursor: grab;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
+  transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px var(--shadow);
 }
 
 .card:active {
@@ -99,6 +170,7 @@ body {
 
 .card .title {
   color: var(--text);
+  font-weight: 500;
 }
 
 .card .project {
@@ -114,6 +186,13 @@ body {
   border: none;
   cursor: pointer;
   color: var(--text-secondary);
+  opacity: 0.7;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.remove-btn:hover {
+  color: var(--danger-color);
+  opacity: 1;
 }
 
 .add-form {
@@ -128,16 +207,42 @@ body {
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 4px;
+}
+
+.add-form input:focus,
+.add-form select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(49, 95, 134, 0.1);
 }
 
 .add-form button {
   padding: 0.5rem 1rem;
   cursor: pointer;
   background: var(--primary-color);
-  color: white;
+  color: #ffffff;
+  border: 1px solid var(--primary-color);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.add-form button:hover {
+  background: #284f70;
+}
+
+.name-input {
   border: none;
-  border-radius: 6px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  padding: 0.1rem 0;
+}
+
+.name-input:focus {
+  outline: none;
+  color: var(--primary-color);
+  border-bottom: 1px solid var(--primary-color);
 }
 
 @media (max-width: 768px) {
