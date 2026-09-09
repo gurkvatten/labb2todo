@@ -45,6 +45,23 @@ watch(userName, (value) => {
   localStorage.setItem('userName', value)
 })
 
+const selectedProject = ref('all')
+
+const uniqueProjects = computed(() => {
+  const projects = tasks.value.map(t => t.project).filter(p => p.trim() !== '')
+  return [...new Set(projects)]
+})
+
+const filteredTasks = computed(() => {
+  if (selectedProject.value === 'all') {
+    return tasks.value
+  }
+  return tasks.value.filter(t => t.project === selectedProject.value)
+})
+const filteredTodoTasks = computed(() => filteredTasks.value.filter(t => t.status === 'todo'))
+const filteredInProgressTasks = computed(() => filteredTasks.value.filter(t => t.status === 'in-progress'))
+const filteredDoneTasks = computed(() => filteredTasks.value.filter(t => t.status === 'done'))
+
 function addTask() {
   if (!newTask.value.title.trim()) return
 
@@ -123,6 +140,14 @@ const doneTasks = computed(() => tasks.value.filter(t => t.status === 'done'))
       </select>
       <button type="submit">Lägg till</button>
     </form>
+
+    <div class="project-filter">
+      <label for="project-select">Filtrera projekt:</label>
+      <select id="project-select" v-model="selectedProject">
+        <option value="all">Alla</option>
+        <option v-for="project in uniqueProjects" :key="project" :value="project">{{ project }}</option>
+      </select>
+    </div>
 
     <div class="board">
       <div
