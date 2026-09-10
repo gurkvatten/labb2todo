@@ -188,7 +188,7 @@ function priorityColor(priority) {
 
     <div class="project-filter">
       <label for="project-select">Filtrera projekt:</label>
-      <select id="project-select" v-model="selectedProject">
+      <select id="project-select" v-model="selectedProject" class="filter-select">
         <option value="all">Alla</option>
         <option v-for="project in uniqueProjects" :key="project" :value="project">
           {{ project }} ({{ projectDays(project) }}d sen)
