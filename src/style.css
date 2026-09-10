@@ -95,7 +95,9 @@ body {
 }
 
 .project-filter {
- border: none;
+  position: relative;
+  padding: 1rem;
+  border: none;
   background: none;
   color: var(--text-secondary);
   font-size: 0.9rem;
@@ -251,6 +253,22 @@ body {
   outline: none;
   color: var(--primary-color);
   border-bottom: 1px solid var(--primary-color);
+}
+.stale-projects {
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.75rem;
+}
+
+.stale-heading {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+
+.stale-projects p:not(.stale-heading) {
+  font-size: 0.85rem;
+  transition: opacity 0.2s ease;
 }
 
 @media (max-width: 768px) {

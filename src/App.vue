@@ -1,10 +1,12 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 
+const DAY_MS = 1000 * 60 * 60 * 24
+
 const tasks = ref([
-  { id: 1, title: 'Exempeluppgift', project: 'Sidoprojekt A', status: 'todo', priority: 'medium' },
-  { id: 2, title: 'Fixa layout', project: 'Sidoprojekt B', status: 'in-progress', priority: 'high' },
-  { id: 3, title: 'Skriv dokumentation', project: 'Sidoprojekt C', status: 'done', priority: 'low' },
+  { id: 1, title: 'Exempeluppgift', project: 'Sidoprojekt A', status: 'todo', priority: 'medium', updatedAt: Date.now() - 1 * DAY_MS },
+  { id: 2, title: 'Fixa layout', project: 'Sidoprojekt B', status: 'in-progress', priority: 'high', updatedAt: Date.now() - 5 * DAY_MS },
+  { id: 3, title: 'Skriv dokumentation', project: 'Sidoprojekt C', status: 'done', priority: 'low', updatedAt: Date.now() - 20 * DAY_MS },
 ])
 
 let nextId = 4
@@ -63,6 +65,39 @@ const todoTasks = computed(() => filteredTasks.value.filter(t => t.status === 't
 const inProgressTasks = computed(() => filteredTasks.value.filter(t => t.status === 'in-progress'))
 const doneTasks = computed(() => filteredTasks.value.filter(t => t.status === 'done'))
 
+
+function daysSince(timestamp) {
+  if (!timestamp) return 0
+  return Math.floor((Date.now() - timestamp) / DAY_MS)
+}
+
+function opacityFromDays(days) {
+  return Math.max(0.4, 1 - days * 0.04)
+}
+
+const projectActivity = computed(() => {
+  return uniqueProjects.value
+    .map(project => {
+      const projectTasks = tasks.value.filter(t => t.project === project)
+      const lastUpdated = Math.max(...projectTasks.map(t => t.updatedAt || 0))
+      return { project, days: daysSince(lastUpdated) }
+    })
+    .sort((a, b) => b.days - a.days)
+})
+
+function projectDays(project) {
+  const entry = projectActivity.value.find(p => p.project === project)
+  return entry ? entry.days : 0
+}
+
+function cardStyle(task) {
+  return {
+    borderLeft: '4px solid ' + priorityColor(task.priority),
+    opacity: opacityFromDays(daysSince(task.updatedAt)),
+  }
+}
+
+
 function addTask() {
   if (!newTask.value.title.trim()) return
 
@@ -72,6 +107,7 @@ function addTask() {
     project: newTask.value.project,
     priority: newTask.value.priority,
     status: 'todo',
+    updatedAt: Date.now(),
   })
 
   newTask.value = { title: '', project: '', priority: 'medium' }
@@ -89,6 +125,7 @@ function onDrop(newStatus) {
   const task = tasks.value.find(t => t.id === draggedTaskId.value)
   if (task) {
     task.status = newStatus
+    task.updatedAt = Date.now()
   }
   draggedTaskId.value = null
 }
@@ -116,6 +153,17 @@ function priorityColor(priority) {
     <div v-if="showSettings" class="settings">
       <p>Antal uppgifter totalt: {{ tasks.length }}</p>
       <p>Klara: {{ doneTasks.length }}</p>
+
+      <div class="stale-projects">
+        <p class="stale-heading">Mest bortglömda projekt:</p>
+        <p
+          v-for="item in projectActivity"
+          :key="item.project"
+          :style="{ opacity: opacityFromDays(item.days) }"
+        >
+          {{ item.project }} — {{ item.days }} dagar sen
+        </p>
+      </div>
     </div>
 
     <form class="add-form" @submit.prevent="addTask">
@@ -142,7 +190,9 @@ function priorityColor(priority) {
       <label for="project-select">Filtrera projekt:</label>
       <select id="project-select" v-model="selectedProject">
         <option value="all">Alla</option>
-        <option v-for="project in uniqueProjects" :key="project" :value="project">{{ project }}</option>
+        <option v-for="project in uniqueProjects" :key="project" :value="project">
+          {{ project }} ({{ projectDays(project) }}d sen)
+        </option>
       </select>
     </div>
 
@@ -159,7 +209,7 @@ function priorityColor(priority) {
           class="card"
           draggable="true"
           @dragstart="onDragStart(task.id)"
-          :style="{ borderLeft: '4px solid ' + priorityColor(task.priority) }"
+          :style="cardStyle(task)"
         >
           <p class="title">{{ task.title }}</p>
           <p class="project">{{ task.project }}</p>
@@ -178,7 +228,7 @@ function priorityColor(priority) {
           class="card"
           draggable="true"
           @dragstart="onDragStart(task.id)"
-          :style="{ borderLeft: '4px solid ' + priorityColor(task.priority) }"
+          :style="cardStyle(task)"
         >
           <p class="title">{{ task.title }}</p>
           <p class="project">{{ task.project }}</p>
@@ -197,7 +247,7 @@ function priorityColor(priority) {
           class="card"
           draggable="true"
           @dragstart="onDragStart(task.id)"
-          :style="{ borderLeft: '4px solid ' + priorityColor(task.priority) }"
+          :style="cardStyle(task)"
         >
           <p class="title">{{ task.title }}</p>
           <p class="project">{{ task.project }}</p>
